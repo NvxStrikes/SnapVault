@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "SnapVault — Privacy-First Full Page Screenshot",
+  "version": "1.0.0",
+  "description": "Capture full-page screenshots locally in PNG, JPEG, WEBP, or PDF. 100% private, no cloud, no account required.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads",
+    "storage",
+    "contextMenus",
+    "notifications"
+  ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Capture Full Page"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "commands": {
+    "capture-full-page": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "MacCtrl+Shift+S"
+      },
+      "description": "Capture Full Page"
+    }
+  }
+}

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapVault Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bundled jsPDF (local only) -->
+  <script src="libs/jspdf.umd.min.js"></script>
+</head>
+<body class="theme-light">
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="5" width="20" height="14" rx="3" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 2V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="brand-name">SnapVault</span>
+      </div>
+      
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="editor">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          Editor
+        </button>
+        <button class="nav-item" data-tab="history">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          History
+        </button>
+        <button class="nav-item" data-tab="batch">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+          Batch Capture
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Settings
+        </button>
+      </nav>
+      
+      <!-- Pro Badge Panel -->
+      <div class="pro-panel-card" id="pro-sidebar-card">
+        <div class="pro-status-badge free">FREE TIER</div>
+        <p class="pro-tagline">Unlock batch processing, element cropping, PDF links & advanced stickers.</p>
+        <button class="btn btn-pro btn-block" id="upgrade-sidebar-btn">Upgrade to Pro</button>
+      </div>
+      
+      <div class="sidebar-footer">
+        <div class="theme-toggle-container">
+          <span class="theme-label">Dark Mode</span>
+          <label class="switch">
+            <input type="checkbox" id="dark-theme-toggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="footer-note">SnapVault v1.0.0 &bull; Local only</div>
+      </div>
+    </aside>
+    
+    <!-- Main Content Panel -->
+    <main class="main-content">
+      
+      <!-- TAB: EDITOR -->
+      <section class="tab-pane active" id="pane-editor">
+        
+        <!-- Editor Initial Loading / Empty State -->
+        <div class="workspace-empty-state" id="editor-empty-state">
+          <div class="empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          </div>
+          <h2>No screenshot loaded</h2>
+          <p>Go to any webpage and use the extensions icon or context menu to capture a screenshot, then annotate and export it here.</p>
+          <div class="empty-actions">
+            <button class="btn btn-primary" id="btn-trigger-test-capture">Capture Active Tab</button>
+            <button class="btn btn-secondary" id="btn-goto-history">View Capture History</button>
+          </div>
+        </div>
+        
+        <!-- Main Editor Workspace (hidden until image loaded) -->
+        <div class="editor-workspace" id="editor-actual-workspace" style="display: none;">
+          <!-- Top Control Bar -->
+          <header class="editor-topbar">
+            <div class="topbar-left">
+              <span class="screenshot-title" id="editor-screenshot-title">Loading screenshot...</span>
+              <span class="screenshot-dimensions" id="editor-screenshot-dim">0 &times; 0</span>
+            </div>
+            
+            <div class="topbar-middle">
+              <!-- Stroke controls -->
+              <div class="control-group">
+                <span class="control-label">Stroke</span>
+                <div class="color-palette" id="color-palette">
+                  <div class="color-swatch active" style="background-color: #ff4757;" data-color="#ff4757"></div>
+                  <div class="color-swatch" style="background-color: #2ed573;" data-color="#2ed573"></div>
+                  <div class="color-swatch" style="background-color: #1e90ff;" data-color="#1e90ff"></div>
+                  <div class="color-swatch" style="background-color: #ffa500;" data-color="#ffa500"></div>
+                  <div class="color-swatch" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
+                  <div class="color-swatch" style="background-color: #2f3542;" data-color="#2f3542"></div>
+                  <div class="color-swatch" style="background-color: #ffffff; border: 1px solid #ddd;" data-color="#ffffff"></div>
+                  <label class="color-picker-wrapper" title="Custom color">
+                    <input type="color" id="custom-color-picker" value="#ff4757">
+                    <span class="custom-color-indicator"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <div class="vertical-divider"></div>
+              
+              <!-- Brush size -->
+              <div class="control-group">
+                <span class="control-label">Size</span>
+                <input type="range" id="stroke-width-range" min="2" max="24" value="5" class="range-slider">
+                <span class="range-value" id="stroke-width-val">5px</span>
+              </div>
+              
+              <div class="vertical-divider"></div>
+              
+              <!-- Action tools -->
+              <div class="action-buttons">
+                <button class="icon-btn" id="btn-undo" title="Undo (Ctrl+Z)" disabled>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+                </button>
+                <button class="icon-btn" id="btn-redo" title="Redo (Ctrl+Y)" disabled>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path></svg>
+                </button>
+                <button class="icon-btn" id="btn-flip-h" title="Flip Horizontally">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h8M14 12h8M6 8l-4 4 4 4M18 8l4 4-4 4"/></svg>
+                </button>
+                <button class="icon-btn" id="btn-flip-v" title="Flip Vertically">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2v8M12 14v8M8 6l4-4 4 4M8 18l4 4-4 4"/></svg>
+                </button>
+                <button class="icon-btn" id="btn-clear-canvas" title="Clear all annotations">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="topbar-right">
+              <!-- Zoom and Export dropdown -->
+              <div class="zoom-controls">
+                <button class="zoom-btn" id="btn-zoom-out">-</button>
+                <span class="zoom-percent" id="zoom-indicator">100%</span>
+                <button class="zoom-btn" id="btn-zoom-in">+</button>
+                <button class="zoom-btn" id="btn-zoom-reset" title="Fit Screen">Fit</button>
+              </div>
+              
+              <div class="dropdown-wrapper">
+                <button class="btn btn-primary btn-icon" id="btn-export-dropdown">
+                  Export
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                
+                <div class="export-dropdown-menu" id="export-menu">
+                  <button class="dropdown-item" id="export-png">
+                    <strong>Export as PNG</strong>
+                    <span>Lossless format</span>
+                  </button>
+                  <button class="dropdown-item" id="export-jpeg">
+                    <strong>Export as JPEG</strong>
+                    <span>Standard compressed format</span>
+                  </button>
+                  <button class="dropdown-item" id="export-webp">
+                    <strong>Export as WEBP</strong>
+                    <span>Modern web optimized format</span>
+                  </button>
+                  <button class="dropdown-item" id="export-pdf">
+                    <div class="item-pro-row">
+                      <strong>Export as PDF</strong>
+                      <span class="badge-pro-tiny">PRO</span>
+                    </div>
+                    <span>Document format with clickable links</span>
+                  </button>
+                  <div class="dropdown-divider"></div>
+                  <button class="dropdown-item" id="export-copy">
+                    <strong>Copy to Clipboard</strong>
+                    <span>Copy image pixels directly</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </header>
+          
+          <!-- Outer Area with side tool-drawer and canvas workspace -->
+          <div class="editor-main-layout">
+            <!-- Left Toolbar -->
+            <nav class="editor-toolbar">
+              <button class="tool-btn active" data-tool="select" title="Pan & Zoom (Spacebar + Drag)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                <span class="tool-label">Pan</span>
+              </button>
+              <button class="tool-btn" data-tool="arrow" title="Draw Arrow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"></line><polyline points="12 5 19 5 19 12"></polyline></svg>
+                <span class="tool-label">Arrow</span>
+              </button>
+              <button class="tool-btn" data-tool="rect" title="Draw Rectangle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+                <span class="tool-label">Rect</span>
+              </button>
+              <button class="tool-btn" data-tool="ellipse" title="Draw Ellipse">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>
+                <span class="tool-label">Ellipse</span>
+              </button>
+              <button class="tool-btn" data-tool="highlight" title="Highlight Content">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <span class="tool-label">Highlight</span>
+              </button>
+              <button class="tool-btn" data-tool="blur" title="Blur / Pixelate Sensitive Info">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
+                <span class="tool-label">Redact</span>
+              </button>
+              <button class="tool-btn" data-tool="text" title="Add Text Annotation">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+                <span class="tool-label">Text</span>
+              </button>
+              <button class="tool-btn" data-tool="brush" title="Freehand Brush Drawing">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 22 1-1c1.4-1.4 2.4-3.2 3-5.2L18 9l-3-3-6.8 2c-2 .6-3.8 1.6-5.2 3l-1 1M18 9l3-3-3-3-3 3"/></svg>
+                <span class="tool-label">Brush</span>
+              </button>
+              <button class="tool-btn" data-tool="crop" title="Crop Canvas Area">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+                <span class="tool-label">Crop</span>
+              </button>
+              
+              <div class="tool-pro-wrapper">
+                <button class="tool-btn" data-tool="emoji" id="tool-btn-emoji" title="Add Emoji Sticker (Pro)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                  <span class="tool-label">Stickers</span>
+                  <span class="badge-pro-tiny-pos">PRO</span>
+                </button>
+                
+                <!-- Emoji sticker picker overlay -->
+                <div class="emoji-picker-container" id="emoji-picker">
+                  <div class="emoji-picker-header">Select Sticker</div>
+                  <div class="emoji-grid">
+                    <span>😀</span><span>😂</span><span>😍</span><span>👍</span><span>👎</span>
+                    <span>🔥</span><span>💡</span><span>❌</span><span>✅</span><span>⚠️</span>
+                    <span>⭐</span><span>❤️</span><span>🎉</span><span>🚀</span><span>💬</span>
+                    <span>👀</span><span>🔒</span><span>🎯</span><span>📈</span><span>📌</span>
+                  </div>
+                </div>
+              </div>
+            </nav>
+            
+            <!-- Canvas Workspace Panel -->
+            <div class="workspace-viewport" id="workspace-viewport">
+              <div class="workspace-canvas-wrapper" id="canvas-wrapper">
+                <canvas id="screenshot-canvas"></canvas>
+                <!-- Overlay input element for text tool -->
+                <div id="text-tool-overlay-container"></div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+      
+      <!-- TAB: HISTORY -->
+      <section class="tab-pane" id="pane-history">
+        <header class="section-header">
+          <div>
+            <h1>Capture History</h1>
+            <p>Locally stored screenshots. No data ever leaves your device.</p>
+          </div>
+          <button class="btn btn-secondary danger-hover" id="btn-clear-history">Clear History</button>
+        </header>
+        
+        <div class="history-metrics">
+          <span class="metrics-tag" id="history-count">0 items stored</span>
+          <span class="metrics-tag">IndexedDB storage</span>
+        </div>
+        
+        <!-- History Empty State -->
+        <div class="empty-state-container" id="history-empty-state">
+          <div class="empty-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg>
+          </div>
+          <h3>History is empty</h3>
+          <p>Once you capture a page, it will be catalogued here for fast re-access.</p>
+        </div>
+        
+        <!-- History Grid -->
+        <div class="history-grid" id="history-grid" style="display: none;">
+          <!-- History cards dynamically generated -->
+        </div>
+      </section>
+      
+      <!-- TAB: BATCH CAPTURE -->
+      <section class="tab-pane" id="pane-batch">
+        <header class="section-header">
+          <div>
+            <div class="title-with-badge">
+              <h1>Batch capture</h1>
+              <span class="badge-pro">PRO FEATURE</span>
+            </div>
+            <p>Queue multiple URLs, capture full-pages automatically, and export them into history.</p>
+          </div>
+        </header>
+        
+        <!-- Batch Capture Locked State -->
+        <div class="pro-locked-state" id="batch-locked-state">
+          <div class="lock-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <h3>Batch capture is a PRO feature</h3>
+          <p>Please enter your Gumroad license key in the settings tab to unlock automated multi-URL screenshots.</p>
+          <button class="btn btn-primary" id="btn-goto-settings-batch">Unlock now</button>
+        </div>
+        
+        <!-- Batch Capture Workspace (unlocked) -->
+        <div class="batch-workspace" id="batch-unlocked-workspace" style="display: none;">
+          <div class="card card-settings">
+            <div class="form-group">
+              <label for="batch-urls">URLs to Capture (one per line)</label>
+              <textarea id="batch-urls" placeholder="https://example.com&#10;https://wikipedia.org&#10;https://github.com" rows="8"></textarea>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="batch-delay">Scroll Settle Delay (ms)</label>
+                <div class="range-group">
+                  <input type="range" id="batch-delay" min="200" max="2000" step="50" value="400" class="range-slider">
+                  <span class="range-value" id="batch-delay-val">400ms</span>
+                </div>
+                <small class="form-help">Increase if pages have lazy-loading images or dynamic loading elements.</small>
+              </div>
+            </div>
+            
+            <div class="batch-disclaimer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <span>Batch capture requires permission to script new tabs. You will be prompted to grant permissions when clicking start.</span>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-start-batch">Start Batch capture</button>
+          </div>
+          
+          <!-- Batch capture live progress panel -->
+          <div class="card card-progress" id="batch-progress-card" style="display: none;">
+            <h3>Batch capture Progress</h3>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="batch-progress-fill" style="width: 0%;"></div>
+            </div>
+            
+            <div class="progress-status-row">
+              <span id="batch-progress-text">0 / 0 pages captured</span>
+              <span class="spinner-small" id="batch-progress-spinner"></span>
+            </div>
+            
+            <div class="batch-logs-title">Activity Logs</div>
+            <div class="batch-logs" id="batch-logs">
+              <!-- Log entries dynamically appended -->
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- TAB: SETTINGS -->
+      <section class="tab-pane" id="pane-settings">
+        <header class="section-header">
+          <div>
+            <h1>Settings & Activation</h1>
+            <p>Configure scroll capture settings and manage your Gumroad license key.</p>
+          </div>
+        </header>
+        
+        <div class="settings-grid">
+          
+          <!-- Column 1: Capturing parameters -->
+          <div class="card settings-card">
+            <h2>Capture Settings</h2>
+            
+            <div class="form-group">
+              <label for="setting-delay">Scroll Settle Delay</label>
+              <div class="range-group">
+                <input type="range" id="setting-delay" min="100" max="1500" step="50" value="300" class="range-slider">
+                <span class="range-value" id="setting-delay-val">300ms</span>
+              </div>
+              <small class="form-help">Time (in milliseconds) the extension pauses at each scroll step for content/images to render.</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="setting-max-scroll">Maximum Scroll Limit</label>
+              <div class="range-group">
+                <input type="range" id="setting-max-scroll" min="1" max="50" value="15" class="range-slider">
+                <span class="range-value" id="setting-max-scroll-val">15 screens</span>
+              </div>
+              <small class="form-help">Prevents infinite capturing loops on feeds with infinite scrolling (e.g. social media).</small>
+            </div>
+            
+            <div class="form-group">
+              <div class="checkbox-group">
+                <input type="checkbox" id="setting-expand-scroll" checked>
+                <label for="setting-expand-scroll">Automatically expand scrollable divs</label>
+              </div>
+              <small class="form-help">Stretches inner-scrollable containers to their full scrollHeight during page captures so their full text is stitched.</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="setting-filename">Filename Template</label>
+              <input type="text" id="setting-filename" value="SnapVault_{title}_{date}_{time}" class="form-control">
+              <small class="form-help">Available placeholders: <code>{title}</code>, <code>{date}</code>, <code>{time}</code>, <code>{url}</code>.</small>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-save-capture-settings">Save Settings</button>
+          </div>
+          
+          <!-- Column 2: PRO Activation -->
+          <div class="card settings-card">
+            <h2>SnapVault Pro Activation</h2>
+            <div class="pro-badge-showcase" id="pro-badge-status">
+              <div class="status-indicator inactive"></div>
+              <span>FREE TIER ACTIVE</span>
+            </div>
+            
+            <p>Unlock features that give you ultimate control over screenshots:</p>
+            <ul class="pro-features-list">
+              <li>PDF exports with clickable hyperlinks.</li>
+              <li>Batch screenshot capture of multiple URLs.</li>
+              <li>Element selection capture (crop specific div/box).</li>
+              <li>Annotation emoji stickers.</li>
+              <li>Priority support.</li>
+            </ul>
+            
+            <div class="form-group">
+              <label for="license-key-input">Gumroad License Key</label>
+              <input type="password" id="license-key-input" placeholder="Enter license key..." class="form-control">
+              <small class="form-help" id="license-status-help">One-time payment key verified locally.</small>
+            </div>
+            
+            <div class="activation-actions">
+              <button class="btn btn-pro" id="btn-activate-license">Activate Pro</button>
+              <a href="https://novastrikes.gumroad.com/l/snapvault" target="_blank" class="btn btn-secondary" id="btn-buy-license">Get License Key</a>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+  </div>
+
+  <script src="db.js"></script>
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>

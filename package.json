@@ -1,0 +1,12 @@
+{
+  "name": "snapvault",
+  "version": "1.0.0",
+  "description": "Full Page Screenshot Chrome Extension",
+  "main": "background.js",
+  "scripts": {
+    "postinstall": "node setup-jspdf.js"
+  },
+  "dependencies": {
+    "jspdf": "^2.5.2"
+  }
+}
