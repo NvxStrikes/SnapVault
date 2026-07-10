@@ -176,6 +176,16 @@ async function startCaptureWorkflow(tabId, mode) {
     }
   } catch (err) {
     console.error('Capture workflow failed:', err);
+    let msg = err.message || 'An error occurred during capture.';
+    if (err.message && (err.message.includes('permission') || err.message.includes('access') || err.message.includes('manifest'))) {
+      msg = 'SnapVault cannot access this page. Please click the SnapVault toolbar icon directly on the page you want to capture.';
+    }
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: 'icons/icon128.png',
+      title: 'SnapVault Capture Info',
+      message: msg
+    });
   }
 }
 
