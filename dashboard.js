@@ -891,7 +891,11 @@ function createTextOverlay(clientX, clientY, canvasX, canvasY) {
   textarea.focus();
 
   // Complete and draw text on blur or Enter key
+  let isFinished = false;
   function finishText() {
+    if (isFinished) return;
+    isFinished = true;
+
     const textVal = textarea.value.trim();
     if (textVal) {
       saveState();
@@ -906,7 +910,9 @@ function createTextOverlay(clientX, clientY, canvasX, canvasY) {
       redoStack = [];
       updateUndoRedoButtons();
     }
-    textarea.remove();
+    if (textarea.parentNode) {
+      textarea.remove();
+    }
     renderCanvas();
   }
 
@@ -917,7 +923,10 @@ function createTextOverlay(clientX, clientY, canvasX, canvasY) {
       finishText();
     }
     if (e.key === 'Escape') {
-      textarea.remove();
+      isFinished = true;
+      if (textarea.parentNode) {
+        textarea.remove();
+      }
       renderCanvas();
     }
   });
